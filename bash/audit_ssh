@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Must be run with sudo
+# Removes all password authentication on the machine for SSH 
+# Prints all authorized keys and their locations
+# Prints all current SSH connections
+
+echo "== Checking for password authentication =="
+grep -Rnw '/etc/' -e "PasswordAuthentication yes" 2> /dev/null|
+while read line
+do
+    if [[ "$line" != *"#"* ]]; then
+        FNAME=`echo $line | cut -d : -f 1`
+        LINE=`echo $line | cut -d : -f 2`
+        FNAME="${FNAME/\/\///}"
+	sed -i ${LINE}d ${FNAME}
+        echo "PubkeyAuthentication yes" >> $FNAME
+	echo "PasswordAuthentication no" >> $FNAME
+	echo "Removed password authentication at line $LINE in $FNAME"
+    fi
+done
+
+
+echo "== Listing authorized keys =="
+find / -name authorized_keys 2> /dev/null |
+while read line
+do
+    echo "--- $line ---"
+    cat $line
+done
+
+echo "== Listing current SSH connections =="
+ss -t -a | grep ssh | grep ESTAB |
+while read line
+do
+	SRC_IP=`echo $line | cut -d ' ' -f 5 | cut -d ':' -f 1`
+	who -u | grep $SRC_IP
+done
