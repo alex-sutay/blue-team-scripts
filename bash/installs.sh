@@ -1,15 +1,13 @@
 #!/bin/bash
-sudo apt-get update
+#run as sudo
+apt-get update
 
-#installs
-sudo apt-get -y install net-tools
-sudo apt-get -y install nmap
-sudo apt-get -y install sleuthkit
-sudo apt-get -y install tilde
-sudo apt-get -y install auditd
-sudo systemctl enable auditd
+#installs, add any installs to the variable
+additions=("net-tools" "nmap" "sleuthkit" "tilde" "auditd")
+apt-get -y install ${additions[@]}
 
-#uninstalls
-sudo apt remove python2
-sudo apt remove python3
-sudo apt-get remove python3-pip
+systemctl enable auditd
+
+#uninstalls, add any uninstalls to the variable
+removals=("python2" "python3" "python3-pip")
+apt-get remove ${removals[@]}
