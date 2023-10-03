@@ -81,3 +81,38 @@ wget https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64 && c
 
 ./pspy64
 ```
+
+---
+
+Find SSH config files in /etc where password authentication is specified
+
+```bash
+sudo grep -Rnw '/etc/' -e "PasswordAuthentication yes" | while read line; do [[ "$line" != *"#"* ]] && echo "$line"; done
+```
+
+---
+
+Monitor TCP connections. Refreshes every 5 seconds so a terminal can be kept open running this.
+
+```bash
+netstat -ac 5 | grep TCP
+```
+
+---
+
+Auditing syscalls with auditctl (Installed via install script). This can help find some more difficult stuff.
+
+```bash
+auditctl -a exit,always -S execve
+
+ausearch -m execve -i
+```
+
+---
+
+Find top talking IP addresses over 1000 packets
+
+```bash
+sudo tcpdump -nn -c 1000| awk '{print $3}' | cut -d '.' -f1-4 | sort -n | uniq -c | sort -nr
+```
+
