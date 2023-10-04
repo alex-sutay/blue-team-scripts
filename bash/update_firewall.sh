@@ -24,10 +24,10 @@ for port in {1..65535}; do
 done
 
 # Block incoming traffic from the specified IP address range
-current_ip="$start_ip"
-while [ "$current_ip" != "$end_ip" ]; do
-    ufw deny from "$current_ip" to any
-    current_ip=$(sipcalc -s 0.0.0.0 "$current_ip" | grep "Usable range" | awk '{print $3}')
+for net in {6..255}; do
+    for ip in $(seq -f "10.0.$net.%g" 0 255); do
+        ufw deny from "$ip" to any
+    done
 done
 
 # Enable the firewall
